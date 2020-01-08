@@ -29,9 +29,9 @@ namespace forex_import
             Console.WriteLine(responseBody);
 
             string serverPost = "localhost:5002";
-            string urlPost = $"http://{serverPost}/api/forexprices";
+            string urlPost = $"http://{serverPost}/api/forexprices/AUDUSD";
             var stringContent = new StringContent(responseBody,UnicodeEncoding.UTF8, "application/json");
-            var responseBodyPost = await client.PostAsync(urlPost,stringContent);
+            var responseBodyPost = await client.PutAsync(urlPost,stringContent);
         }
     }
 }
