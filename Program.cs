@@ -32,6 +32,28 @@ namespace forex_import
             string urlPost = $"http://{serverPost}/api/forexprices/AUDUSD";
             var stringContent = new StringContent(responseBody,UnicodeEncoding.UTF8, "application/json");
             var responseBodyPost = await client.PutAsync(urlPost,stringContent);
+
+            string startDate = DateTime.Now.AddDays(-1).ToString("yyyyMMdd");
+            string endDate = "20300101";
+
+            var dailyPrices = await GetDailyPrices(startDate,endDate,server,"AUDUSD");
+            await SaveDailyPrices(serverPost,dailyPrices);
+
+        }
+
+        static async Task<string> GetDailyPrices(string startDate, string endDate,string server,string pair)
+        {
+            string url = $"http://{server}/api/forexclasses/v1/dailypricesrange/{pair}/{startDate}/{endDate}";
+            string responseBody = await client.GetStringAsync(url);
+            Console.WriteLine(responseBody);
+            return responseBody;
+        }
+
+        static async Task SaveDailyPrices(string server,string prices)
+        {
+            string urlPost = $"http://{server}/api/forexdailyprices/";
+            var stringContent = new StringContent(prices,UnicodeEncoding.UTF8, "application/json");
+            var responseBodyPost = await client.PostAsync(urlPost,stringContent);
         }
     }
 }
