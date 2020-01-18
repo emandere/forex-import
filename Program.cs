@@ -28,8 +28,8 @@ namespace forex_import
             string responseBody = await client.GetStringAsync(url);
             Console.WriteLine(responseBody);
 
-            string serverPost = "localhost:5002";
-            string urlPost = $"http://{serverPost}/api/forexprices/AUDUSD";
+            string serverLocal = "localhost:5002";
+            string urlPost = $"http://{serverLocal}/api/forexprices/AUDUSD";
             var stringContent = new StringContent(responseBody,UnicodeEncoding.UTF8, "application/json");
             var responseBodyPost = await client.PutAsync(urlPost,stringContent);
 
@@ -37,7 +37,17 @@ namespace forex_import
             string endDate = "20300101";
 
             var dailyPrices = await GetDailyPrices(startDate,endDate,server,"AUDUSD");
-            await SaveDailyPrices(serverPost,dailyPrices);
+            await SaveDailyPrices(serverLocal,dailyPrices);
+
+            var pricesLocal = await GetDailyPricesFromLocal(serverLocal);
+            foreach(var price in pricesLocal.priceDTOs)
+            {
+                var serverPrice = await GetLatestPricesDTO(server,price.Instrument);
+                if(serverPrice.Item1.UTCTime.CompareTo(price.UTCTime)>0)
+                {
+                    await SaveRealTimePrices(serverLocal,serverPrice.Item2);
+                }
+            }
 
         }
 
@@ -49,11 +59,37 @@ namespace forex_import
             return responseBody;
         }
 
+        static async Task<(ForexPriceDTO,string)> GetLatestPricesDTO(string server, string pair)
+        {
+            string url = $"http://{server}/forexclasses/v1/latestprices/{pair}";
+            string responseBody = await client.GetStringAsync(url);
+
+            var priceLocal = JsonSerializer.Deserialize<ForexPriceDTO>(responseBody);
+
+            return (priceLocal,responseBody);
+        }
+
+        static async Task<PricesDTO> GetDailyPricesFromLocal(string server)
+        {
+            string url = $"http://{server}/api/forexprices";
+            string responseBody = await client.GetStringAsync(url);
+            var pricesLocal = JsonSerializer.Deserialize<PricesDTO>(responseBody);
+            //var compare = pricesLocal.priceDTOs[0].UTCTime.CompareTo(DateTime.Now);
+            //Console.WriteLine(pricesLocal.priceDTOs[0].Instrument);
+            return pricesLocal;
+        }
         static async Task SaveDailyPrices(string server,string prices)
         {
             string urlPost = $"http://{server}/api/forexdailyprices/";
             var stringContent = new StringContent(prices,UnicodeEncoding.UTF8, "application/json");
             var responseBodyPost = await client.PostAsync(urlPost,stringContent);
+        }
+
+        static async Task SaveRealTimePrices(string server,string responseBody)
+        {
+            string urlPost = $"http://{server}/api/forexprices/AUDUSD";
+            var stringContent = new StringContent(responseBody,UnicodeEncoding.UTF8, "application/json");
+            var responseBodyPost = await client.PutAsync(urlPost,stringContent);
         }
     }
 }
