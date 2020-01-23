@@ -17,6 +17,17 @@ namespace forex_import
     class Program
     {
         static readonly HttpClient client = new HttpClient();
+        static List<string> pairs = new List<string>()
+        {
+            "AUDUSD",
+            "EURUSD",
+            "GBPUSD",
+            "NZDUSD",
+            "USDCAD",
+            "USDCHF",
+            "USDJPY"
+        };
+
         static async Task Main(string[] args)
         {
             var builder = new ConfigurationBuilder()
@@ -40,12 +51,23 @@ namespace forex_import
             await SaveDailyPrices(serverLocal,dailyPrices);
 
             var pricesLocal = await GetDailyPricesFromLocal(serverLocal);
+            /*foreach(var pair in pairs)
+            {
+                 var serverPrice = await GetLatestPricesDTO(server,pair);
+                 await SaveRealTimePrices(serverLocal,pair,serverPrice.Item2);
+            }*/
+
             foreach(var price in pricesLocal.priceDTOs)
             {
                 var serverPrice = await GetLatestPricesDTO(server,price.Instrument);
-                if(serverPrice.Item1.UTCTime.CompareTo(price.UTCTime)>0)
+                if(serverPrice.Item1.UTCTime.CompareTo(price.UTCTimeAddZ)>0)
                 {
-                    await SaveRealTimePrices(serverLocal,serverPrice.Item2);
+                    await SaveRealTimePrices(serverLocal,price.Instrument,serverPrice.Item2);
+                    Console.WriteLine($"{price.Instrument} Updated");
+                }
+                else
+                {
+                    Console.WriteLine($"{price.Instrument} Not updated");
                 }
             }
 
@@ -61,7 +83,7 @@ namespace forex_import
 
         static async Task<(ForexPriceDTO,string)> GetLatestPricesDTO(string server, string pair)
         {
-            string url = $"http://{server}/forexclasses/v1/latestprices/{pair}";
+            string url = $"http://{server}/api/forexclasses/v1/latestprices/{pair}";
             string responseBody = await client.GetStringAsync(url);
 
             var priceLocal = JsonSerializer.Deserialize<ForexPriceDTO>(responseBody);
@@ -85,9 +107,9 @@ namespace forex_import
             var responseBodyPost = await client.PostAsync(urlPost,stringContent);
         }
 
-        static async Task SaveRealTimePrices(string server,string responseBody)
+        static async Task SaveRealTimePrices(string server,string pair,string responseBody)
         {
-            string urlPost = $"http://{server}/api/forexprices/AUDUSD";
+            string urlPost = $"http://{server}/api/forexprices/{pair}";
             var stringContent = new StringContent(responseBody,UnicodeEncoding.UTF8, "application/json");
             var responseBodyPost = await client.PutAsync(urlPost,stringContent);
         }

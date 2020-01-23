@@ -24,5 +24,7 @@ namespace forex_import.Models
         public double Ask { get; set; }
 
         public DateTime UTCTime{get => DateTime.Parse(Time);}
+
+        public DateTime UTCTimeAddZ{get => DateTime.Parse(Time+"Z");}
     }   
 }
