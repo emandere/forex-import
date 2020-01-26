@@ -51,12 +51,7 @@ namespace forex_import
             await SaveDailyPrices(serverLocal,dailyPrices);
 
             var pricesLocal = await GetDailyPricesFromLocal(serverLocal);
-            /*foreach(var pair in pairs)
-            {
-                 var serverPrice = await GetLatestPricesDTO(server,pair);
-                 await SaveRealTimePrices(serverLocal,pair,serverPrice.Item2);
-            }*/
-
+            var sessionsLocal = await GetSessions(server);
             foreach(var price in pricesLocal.priceDTOs)
             {
                 var serverPrice = await GetLatestPricesDTO(server,price.Instrument);
@@ -79,6 +74,14 @@ namespace forex_import
             string responseBody = await client.GetStringAsync(url);
             Console.WriteLine(responseBody);
             return responseBody;
+        }
+
+        static async Task<string> GetSessions(string server)
+        {
+            string url = $"http://{server}/api/forexclasses/v1/sessions";
+            string responseBody = await client.GetStringAsync(url);
+            Console.WriteLine(responseBody);
+            return responseBody; 
         }
 
         static async Task<(ForexPriceDTO,string)> GetLatestPricesDTO(string server, string pair)
