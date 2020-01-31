@@ -34,7 +34,7 @@ namespace forex_import.Models
         [JsonPropertyName("Strategy")]
         public StrategyDTO Strategy { get; set; }
         
-        [JsonPropertyName("SessionUser")]
+        [JsonPropertyName("sessionUser")]
         public SessionUserDTO SessionUser { get; set; }
         
         [JsonPropertyName("Balance")]
@@ -55,34 +55,34 @@ namespace forex_import.Models
 
     public  class SessionUserDTO
     {
-        [JsonPropertyName("Id")]
+        [JsonPropertyName("id")]
         public string Id { get; set; }
         
         [JsonPropertyName("idinfo")]
         public string idinfo { get; set; }
         
-        [JsonPropertyName("Status")]
+        [JsonPropertyName("status")]
         public object Status { get; set; }
         
         [JsonPropertyName("Accounts")]
         public AccountsDTO Accounts { get; set; }
         
-        [JsonPropertyName("Balance")]
+        [JsonPropertyName("balance")]
         public double Balance{ get; set; }
         
-        [JsonPropertyName("ClosedTrades")]
+        [JsonPropertyName("closedTrades")]
         public int ClosedTrades{ get; set; }
         
-        [JsonPropertyName("OpenTrades")]
+        [JsonPropertyName("openTrades")]
         public int OpenTrades{ get; set; }
         
-        [JsonPropertyName("PercentProfitableClosed")]
+        [JsonPropertyName("percentProfitableClosed")]
         public double PercentProfitableClosed{ get; set; }
         
-        [JsonPropertyName("PercentProfitableOpen")]
+        [JsonPropertyName("percentProfitableOpen")]
         public double PercentProfitableOpen{ get; set; }
         
-        [JsonPropertyName("RealizedPL")]
+        [JsonPropertyName("realizedPL")]
         public double RealizedPL { get; set; }
 
         
@@ -90,46 +90,46 @@ namespace forex_import.Models
 
     public  class AccountsDTO
     {
-        [JsonPropertyName("Primary")]
+        [JsonPropertyName("primary")]
         public AccountDTO Primary { get; set; }
         
-        [JsonPropertyName("Secondary")]
+        [JsonPropertyName("secondary")]
         public AccountDTO Secondary { get; set; }
     }
 
     public  class AccountDTO
     {
-        [JsonPropertyName("Id")]
+        [JsonPropertyName("id")]
         public string Id { get; set; }
         
         [JsonPropertyName("idinfo")]
         public string idinfo { get; set; }
         
-        [JsonPropertyName("Cash")]
+        [JsonPropertyName("cash")]
         public double Cash { get; set; }
         
-        [JsonPropertyName("Margin")]
+        [JsonPropertyName("margin")]
         public long Margin { get; set; }
         
-        [JsonPropertyName("MarginRatio")]
+        [JsonPropertyName("marginRatio")]
         public long MarginRatio { get; set; }
         
-        [JsonPropertyName("RealizedPL")]
+        [JsonPropertyName("realizedPL")]
         public double RealizedPL { get; set; }
         
-        [JsonPropertyName("Trades")]
+        [JsonPropertyName("trades")]
         public TradeDTO[] Trades { get; set; }
         
-        [JsonPropertyName("Orders")]
+        [JsonPropertyName("orders")]
         public OrderDTO[] Orders { get; set; }
         
-        [JsonPropertyName("ClosedTrades")]    
+        [JsonPropertyName("closedTrades")]    
         public TradeDTO[] ClosedTrades { get; set; }
         
-        [JsonPropertyName("BalanceHistory")]
+        [JsonPropertyName("balanceHistory")]
         public BalanceHistoryDTO[] BalanceHistory { get; set; }
         
-        [JsonPropertyName("Idcount")]
+        [JsonPropertyName("idcount")]
         public long Idcount { get; set; }
     }
 

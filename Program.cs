@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using AutoMapper;
 using forex_import.Models;
+using forex_import.Models.Input;
 using forex_import.Config;
 
 namespace forex_import
@@ -52,6 +53,8 @@ namespace forex_import
 
             var pricesLocal = await GetDailyPricesFromLocal(serverLocal);
             var sessionsLocal = await GetSessions(server);
+            var sessions = JsonSerializer.Deserialize<List<ForexSessionInDTO>>(sessionsLocal);
+            await SaveSessions(serverLocal,sessionsLocal);
             foreach(var price in pricesLocal.priceDTOs)
             {
                 var serverPrice = await GetLatestPricesDTO(server,price.Instrument);
@@ -80,7 +83,7 @@ namespace forex_import
         {
             string url = $"http://{server}/api/forexclasses/v1/sessions";
             string responseBody = await client.GetStringAsync(url);
-            Console.WriteLine(responseBody);
+            //Console.WriteLine(responseBody);
             return responseBody; 
         }
 
@@ -115,6 +118,13 @@ namespace forex_import
             string urlPost = $"http://{server}/api/forexprices/{pair}";
             var stringContent = new StringContent(responseBody,UnicodeEncoding.UTF8, "application/json");
             var responseBodyPost = await client.PutAsync(urlPost,stringContent);
+        }
+
+         static async Task SaveSessions(string server,string sessions)
+        {
+            string urlPost = $"http://{server}/api/forexsession/";
+            var stringContent = new StringContent(sessions,UnicodeEncoding.UTF8, "application/json");
+            var responseBodyPost = await client.PostAsync(urlPost,stringContent);
         }
     }
 }
