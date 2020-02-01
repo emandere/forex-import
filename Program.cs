@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.IO;
 using System.Threading.Tasks;
 using System.Net.Http;
@@ -9,7 +10,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using AutoMapper;
 using forex_import.Models;
-using forex_import.Models.Input;
 using forex_import.Config;
 
 namespace forex_import
@@ -35,6 +35,16 @@ namespace forex_import
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
             IConfigurationRoot configuration = builder.Build();
+
+
+            var config = new AutoMapper.MapperConfiguration(cfg =>
+            {
+                cfg.AddProfile(new ForexPriceProfile());
+                cfg.AddProfile(new ForexSessionProfile());
+            });
+            var mapper = new Mapper(config);
+
+
             string server = "23.22.66.239";
             string url = $"http://{server}/api/forexclasses/v1/latestprices/AUDUSD";
             string responseBody = await client.GetStringAsync(url);
@@ -54,6 +64,8 @@ namespace forex_import
             var pricesLocal = await GetDailyPricesFromLocal(serverLocal);
             var sessionsLocal = await GetSessions(server);
             var sessions = JsonSerializer.Deserialize<List<ForexSessionInDTO>>(sessionsLocal);
+            var sessionsDTO = sessions.Select(x => mapper.Map<ForexSessionDTO>(x));
+            
             await SaveSessions(serverLocal,sessionsLocal);
             foreach(var price in pricesLocal.priceDTOs)
             {

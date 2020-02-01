@@ -10,6 +10,13 @@ namespace forex_import.Config
         {
             CreateMap<ForexSession, ForexSessionMongo>();
             CreateMap<ForexSession, ForexSessionDTO>();
+            CreateMap<ForexSessionInDTO,ForexSessionDTO>()
+                .ForMember(dest => dest.SessionType,
+                    opts => opts.MapFrom
+                    (
+                        src => src.SessionType.Value
+                    )
+                );
             CreateMap<ForexSessionMongo, ForexSession>()
                 .ForMember
                 ( dest=>dest.StartDate,
@@ -35,18 +42,22 @@ namespace forex_import.Config
             CreateMap<SessionUser,SessionUserDTO>();
             CreateMap<SessionUser,SessionUserMongo>();
             CreateMap<SessionUserMongo,SessionUser>();
+            CreateMap<SessionUserInDTO,SessionUserDTO>();
 
             CreateMap<Accounts,AccountsDTO>();
             CreateMap<Accounts,AccountsMongo>();
             CreateMap<AccountsMongo,Accounts>();
+            CreateMap<AccountsInDTO,AccountsDTO>();
 
             CreateMap<Account,AccountDTO>();
             CreateMap<Account,AccountMongo>();
             CreateMap<AccountMongo,Account>();
+            CreateMap<AccountInDTO,AccountDTO>();
             
             CreateMap<Strategy,StrategyDTO>();
             CreateMap<StrategyMongo,Strategy>();
             CreateMap<Strategy,StrategyMongo>();
+            CreateMap<StrategyInDTO,StrategyDTO>();
 
             CreateMap<BalanceHistory,BalanceHistoryDTO>();
             CreateMap<BalanceHistory,BalanceHistoryMongo>();
@@ -59,15 +70,17 @@ namespace forex_import.Config
                         )
                 )    
             ;
-
+            CreateMap<BalanceHistoryInDTO,BalanceHistoryDTO>();
 
             CreateMap<Trade,TradeDTO>();
             CreateMap<Trade,TradeMongo>();
             CreateMap<TradeMongo,Trade>().ForMember(x => x.PL, opt => opt.Ignore());
+             CreateMap<TradeInDTO,TradeDTO>();
 
             CreateMap<Order,OrderDTO>();
             CreateMap<Order,OrderMongo>();
             CreateMap<OrderMongo,Order>();
+            CreateMap<OrderInDTO,OrderDTO>();
                
         }
 
