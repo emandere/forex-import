@@ -47,24 +47,31 @@ namespace forex_import
 
             string server = "23.22.66.239";
             string url = $"http://{server}/api/forexclasses/v1/latestprices/AUDUSD";
-            string responseBody = await client.GetStringAsync(url);
-            Console.WriteLine(responseBody);
-
             string serverLocal = "localhost:5002";
-            string urlPost = $"http://{serverLocal}/api/forexprices/AUDUSD";
-            var stringContent = new StringContent(responseBody,UnicodeEncoding.UTF8, "application/json");
-            var responseBodyPost = await client.PutAsync(urlPost,stringContent);
+            while(true)
+            {
+                await UpdateLocal(server,serverLocal);
+                Console.WriteLine("Updated...");
+                await Task.Delay(1000*60*1);
+                
+            }
+            
+        }
 
+        static async Task UpdateLocal(string server,string serverLocal)
+        {
             string startDate = DateTime.Now.AddDays(-1).ToString("yyyyMMdd");
             string endDate = "20300101";
-
-            var dailyPrices = await GetDailyPrices(startDate,endDate,server,"AUDUSD");
-            await SaveDailyPrices(serverLocal,dailyPrices);
+           
+            foreach(string pair in pairs)
+            {
+                var dailyPrices = await GetDailyPrices(startDate,endDate,server,pair);
+                await SaveDailyPrices(serverLocal,dailyPrices);
+            }
 
             var pricesLocal = await GetDailyPricesFromLocal(serverLocal);
             var sessionsLocal = await GetSessions(server);
-            var sessions = JsonSerializer.Deserialize<List<ForexSessionInDTO>>(sessionsLocal);
-            var sessionsDTO = sessions.Select(x => mapper.Map<ForexSessionDTO>(x));
+
             
             await SaveSessions(serverLocal,sessionsLocal);
             foreach(var price in pricesLocal.priceDTOs)
@@ -81,13 +88,14 @@ namespace forex_import
                 }
             }
 
+
         }
 
         static async Task<string> GetDailyPrices(string startDate, string endDate,string server,string pair)
         {
             string url = $"http://{server}/api/forexclasses/v1/dailypricesrange/{pair}/{startDate}/{endDate}";
             string responseBody = await client.GetStringAsync(url);
-            Console.WriteLine(responseBody);
+            //Console.WriteLine(responseBody);
             return responseBody;
         }
 
