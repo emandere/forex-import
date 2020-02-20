@@ -8,6 +8,7 @@ using System.Text.Json;
 using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+
 using AutoMapper;
 using forex_import.Models;
 using forex_import.Config;
@@ -31,11 +32,13 @@ namespace forex_import
 
         static async Task Main(string[] args)
         {
+            var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{env}.json", optional: true, reloadOnChange: true);
             IConfigurationRoot configuration = builder.Build();
-
+            
 
             var config = new AutoMapper.MapperConfiguration(cfg =>
             {
@@ -43,11 +46,13 @@ namespace forex_import
                 cfg.AddProfile(new ForexSessionProfile());
             });
             var mapper = new Mapper(config);
+            client.Timeout = TimeSpan.FromMinutes(10);    
 
+            string serverLocal = configuration.GetSection("Servers:Local").Value;
+            string server = configuration.GetSection("Servers:Remote").Value;
+            
+            Console.WriteLine($"{env} and {serverLocal} and {server}");
 
-            string server = "23.22.66.239";
-            string url = $"http://{server}/api/forexclasses/v1/latestprices/AUDUSD";
-            string serverLocal = "localhost:5002";
             while(true)
             {
                 await UpdateLocal(server,serverLocal);
