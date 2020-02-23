@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: forex-import
+  labels:
+    purpose: forex-import
+spec:
+  containers:
+  - name: forex-import
+    image: emandere/forex-import-arm
+    env:
+    - name: ASPNETCORE_ENVIRONMENT
+      value: "Prodk3s"
