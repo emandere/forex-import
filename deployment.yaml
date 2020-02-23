@@ -17,4 +17,4 @@ spec:
         image: emandere/forex-import-arm
         env:
         - name: ASPNETCORE_ENVIRONMENT
-            value: "Prodk3s"
+          value: "Prodk3s"
