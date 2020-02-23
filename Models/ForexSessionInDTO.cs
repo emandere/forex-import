@@ -130,7 +130,7 @@ namespace forex_import.Models
         public string OpenDate { get; set; }
 
         [JsonPropertyName("closeDate")]
-        public string? CloseDate { get; set; }
+        public string CloseDate { get; set; }
 
         [JsonPropertyName("openPrice")]
         public double OpenPrice { get; set; }
