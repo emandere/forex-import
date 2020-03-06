@@ -17,4 +17,4 @@ spec:
         image: emandere/forex-import-x86
         env:
         - name: ASPNETCORE_ENVIRONMENT
-          value: "wsl2"
+          value: "Prodk3s"
