@@ -69,7 +69,11 @@ namespace forex_import
            
             var pricesLocal = await GetDailyPricesFromLocal(serverLocal);
             var shouldUpdate = false;
-            
+
+            if(pricesLocal.priceDTOs.Count()==0)
+            {
+                shouldUpdate = true;
+            }
             
             foreach(var price in pricesLocal.priceDTOs)
             {
@@ -77,8 +81,6 @@ namespace forex_import
                 if(serverPrice.Item1.UTCTime.CompareTo(price.UTCTimeAddZ)>0)
                 {
                     shouldUpdate = true;
-                    await SaveRealTimePrices(serverLocal,price.Instrument,serverPrice.Item2);
-                    Console.WriteLine($"{price.Instrument} Updated");
                 }
                 else
                 {
@@ -88,6 +90,12 @@ namespace forex_import
 
             if(shouldUpdate)
             {
+                foreach(var pair in pairs)
+                {
+                    var serverPrice = await GetLatestPricesDTO(server,pair);
+                    await SaveRealTimePrices(serverLocal,pair,serverPrice.Item2);
+                    Console.WriteLine($"{pair} Updated");
+                }
                 var sessionsLocal = await GetSessions(server);
                 await SaveSessions(serverLocal,sessionsLocal);
                 await SaveAllDailyRealTimePrices(server,serverLocal);
@@ -186,9 +194,18 @@ namespace forex_import
             foreach(string pair in pairs)
             {
                 Console.WriteLine($"Adding Real Prices for {pair}");
-                var latestDailyPrice = await GetLatestDailyPriceDTO(serverLocal,pair);
-                if(latestDailyPrice !=null)
-                    startDate = DateTime.Parse(latestDailyPrice.Datetime).AddDays(-1).ToString("yyyyMMdd");
+
+                try
+                {
+                    var latestDailyPrice = await GetLatestDailyPriceDTO(serverLocal,pair);
+                    if(latestDailyPrice !=null)
+                        startDate = DateTime.Parse(latestDailyPrice.Datetime).AddDays(-1).ToString("yyyyMMdd");
+                }
+                catch(Exception exp)
+                {
+                    startDate = "20160101";
+                    Console.WriteLine(exp.Message);
+                }
 
                 
                 var dailyPrices = await GetDailyPrices(startDate,endDate,server,pair);
