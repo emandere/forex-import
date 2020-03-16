@@ -11,8 +11,8 @@ resources:
 
 variables:
   tag: '$(Build.BuildId)'
-  x86ImageName: 'forex-import-x86'
-  armImageName: 'forex-import-arm'
+  x86ImageName: 'emandere/forex-import-x86'
+  armImageName: 'emandere/forex-import-arm'
 
 stages:
 - stage: Build
@@ -29,7 +29,7 @@ stages:
         command: buildAndPush
         repository: $(x86ImageName)
         dockerfile: '$(Build.SourcesDirectory)/Dockerfile'
-        containerRegistry: 'dockerhub2'
+        containerRegistry: 'dockerhub'
         tags: |
           $(tag)
     - task: Docker@2
@@ -38,6 +38,6 @@ stages:
         command: buildAndPush
         repository: $(armImageName)
         dockerfile: '$(Build.SourcesDirectory)/Dockerfile.arm'
-        containerRegistry: 'dockerhub2'
+        containerRegistry: 'dockerhub'
         tags: |
           $(tag)
