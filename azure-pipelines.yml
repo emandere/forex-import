@@ -1,4 +1,5 @@
 # Docker
+
 # Build a Docker image 
 # https://docs.microsoft.com/azure/devops/pipelines/languages/docker
 
@@ -25,16 +26,18 @@ stages:
     - task: Docker@2
       displayName: Build an x86 image
       inputs:
-        command: build
+        command: buildAndPush
         repository: $(x86ImageName)
         dockerfile: '$(Build.SourcesDirectory)/Dockerfile'
+        containerRegistry: $(dockerhub)
         tags: |
           $(tag)
     - task: Docker@2
       displayName: Build an ARM image
       inputs:
-        command: build
+        command: buildAndPush
         repository: $(armImageName)
         dockerfile: '$(Build.SourcesDirectory)/Dockerfile.arm'
+        containerRegistry: $(dockerhub)
         tags: |
           $(tag)
