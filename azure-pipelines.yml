@@ -10,6 +10,8 @@ resources:
 
 variables:
   tag: '$(Build.BuildId)'
+  x86ImageName: 'forex-import-x86'
+  armImageName: 'forex-import-arm'
 
 stages:
 - stage: Build
@@ -24,6 +26,7 @@ stages:
       displayName: Build an x86 image
       inputs:
         command: build
+        repository: $(x86ImageName)
         dockerfile: '$(Build.SourcesDirectory)/Dockerfile'
         tags: |
           $(tag)
@@ -31,6 +34,7 @@ stages:
       displayName: Build an ARM image
       inputs:
         command: build
+        repository: $(armImageName)
         dockerfile: '$(Build.SourcesDirectory)/Dockerfile.arm'
         tags: |
           $(tag)
