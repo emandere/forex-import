@@ -51,7 +51,7 @@ namespace forex_import
             string serverLocal = configuration.GetSection("Servers:Local").Value;
             string server = configuration.GetSection("Servers:Remote").Value;
             
-            Console.WriteLine($"{env} and {serverLocal} and {server}");
+            Console.WriteLine($"Environment: {env} and {serverLocal} and {server}");
 
             while(true)
             {
