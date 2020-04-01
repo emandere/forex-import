@@ -1,0 +1,20 @@
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: forex-import
+spec:
+  selector:
+    matchLabels:
+      app: forex-import
+  replicas: 1 # tells deployment to run 2 pods matching the template
+  template:
+    metadata:
+      labels:
+        app: forex-import
+    spec:
+      containers:
+      - name: forex-import
+        image: emandere/forex-import-arm:{buildId}
+        env:
+        - name: ASPNETCORE_ENVIRONMENT
+          value: "Prodk3s"
