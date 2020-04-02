@@ -186,38 +186,41 @@ namespace forex_import
             var responseBodyPost = await client.PostAsync(urlPost,stringContent);
         }
 
-         static async Task SaveAllDailyRealTimePrices(string server,string serverLocal)
-         {
-            
+
+        static async Task SavePairDailyRealTimePrice(string pair,string server,string serverLocal)
+        {
             var startDate = "20160101";
             string endDate = "20300101";
-            foreach(string pair in pairs)
+            Console.WriteLine($"Adding Real Prices for {pair}");
+
+            try
             {
-                Console.WriteLine($"Adding Real Prices for {pair}");
-
-                try
-                {
-                    var latestDailyPrice = await GetLatestDailyPriceDTO(serverLocal,pair);
-                    if(latestDailyPrice !=null)
-                        startDate = DateTime.Parse(latestDailyPrice.Datetime).AddDays(-1).ToString("yyyyMMdd");
-                }
-                catch(Exception exp)
-                {
-                    startDate = "20160101";
-                    Console.WriteLine(exp.Message);
-                }
-
-                
-                var dailyPrices = await GetDailyPrices(startDate,endDate,server,pair);
-                await SaveDailyPrices(serverLocal,dailyPrices);
-                var dailyPricesDTO = JsonSerializer.Deserialize<List<ForexDailyPriceDTO>>(dailyPrices);
-                foreach(var price in dailyPricesDTO)
-                {
-                    Console.WriteLine($" {price.DateTimeDayOnly}");
-                    var dailyRealPrices = await GetDailyRealTimePrices(price.DateTimeDayOnly,server,price.Pair);
-                    await SaveDailyRealPrices(serverLocal,dailyRealPrices);
-                }
+                var latestDailyPrice = await GetLatestDailyPriceDTO(serverLocal,pair);
+                if(latestDailyPrice !=null)
+                    startDate = DateTime.Parse(latestDailyPrice.Datetime).AddDays(-1).ToString("yyyyMMdd");
             }
+            catch(Exception exp)
+            {
+                startDate = "20160101";
+                Console.WriteLine(exp.Message);
+            }
+
+            
+            var dailyPrices = await GetDailyPrices(startDate,endDate,server,pair);
+            await SaveDailyPrices(serverLocal,dailyPrices);
+            var dailyPricesDTO = JsonSerializer.Deserialize<List<ForexDailyPriceDTO>>(dailyPrices);
+            foreach(var price in dailyPricesDTO)
+            {
+                Console.WriteLine($"{pair} {price.DateTimeDayOnly}");
+                var dailyRealPrices = await GetDailyRealTimePrices(price.DateTimeDayOnly,server,price.Pair);
+                await SaveDailyRealPrices(serverLocal,dailyRealPrices);
+            }
+        }
+
+         static async Task SaveAllDailyRealTimePrices(string server,string serverLocal)
+         {
+            var saveTasks = pairs.Select(x => SavePairDailyRealTimePrice(x,server,serverLocal));
+            await Task.WhenAll(saveTasks);
          }
     }
 }

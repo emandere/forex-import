@@ -17,7 +17,7 @@
             "console": "internalConsole",
             "stopAtEntry": false,
             "env": {
-                "ASPNETCORE_ENVIRONMENT": "Production"
+                "ASPNETCORE_ENVIRONMENT": "Development"
             }
         },
         {
