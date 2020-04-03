@@ -208,13 +208,13 @@ namespace forex_import
             
             var dailyPrices = await GetDailyPrices(startDate,endDate,server,pair);
             await SaveDailyPrices(serverLocal,dailyPrices);
-            var dailyPricesDTO = JsonSerializer.Deserialize<List<ForexDailyPriceDTO>>(dailyPrices);
+            /*var dailyPricesDTO = JsonSerializer.Deserialize<List<ForexDailyPriceDTO>>(dailyPrices);
             foreach(var price in dailyPricesDTO)
             {
                 Console.WriteLine($"{pair} {price.DateTimeDayOnly}");
                 var dailyRealPrices = await GetDailyRealTimePrices(price.DateTimeDayOnly,server,price.Pair);
                 await SaveDailyRealPrices(serverLocal,dailyRealPrices);
-            }
+            }*/
         }
 
          static async Task SaveAllDailyRealTimePrices(string server,string serverLocal)
