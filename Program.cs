@@ -55,8 +55,15 @@ namespace forex_import
 
             while(true)
             {
-                await UpdateLocal(server,serverLocal);
-                Console.WriteLine("Updated...");
+                try
+                {
+                    await UpdateLocal(server,serverLocal);
+                    Console.WriteLine("Updated...");
+                }
+                catch(Exception e)
+                {
+                    Console.WriteLine($"Graceful exception:{e.Message}");
+                }
                 await Task.Delay(1000*60*1);
                 
             }
