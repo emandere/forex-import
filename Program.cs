@@ -156,11 +156,11 @@ namespace forex_import
             return priceLocal;
         }
 
-        static async Task<PricesDTO> GetDailyPricesFromLocal(string server)
+        static async Task<ForexPricesDTO> GetDailyPricesFromLocal(string server)
         {
             string url = $"http://{server}/api/forexprices";
             string responseBody = await client.GetStringAsync(url);
-            var pricesLocal = JsonSerializer.Deserialize<PricesDTO>(responseBody);
+            var pricesLocal = JsonSerializer.Deserialize<ForexPricesDTO>(responseBody);
             //var compare = pricesLocal.priceDTOs[0].UTCTime.CompareTo(DateTime.Now);
             //Console.WriteLine(pricesLocal.priceDTOs[0].Instrument);
             return pricesLocal;

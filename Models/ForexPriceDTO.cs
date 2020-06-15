@@ -2,7 +2,7 @@ using System;
 using System.Text.Json.Serialization;
 namespace forex_import.Models
 {
-    public class PricesDTO
+    public class ForexPricesDTO
     {
         [JsonPropertyName("prices")]
         public ForexPriceDTO [] priceDTOs{get;set;}
