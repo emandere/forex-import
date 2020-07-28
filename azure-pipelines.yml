@@ -11,7 +11,7 @@ resources:
 
 variables:
   tag: '$(Build.BuildId)'
-  releaseTag: '$(Date:yyyyMMdd)$(Rev:.r)'
+  releaseTag: '$(Build.BuildNumber)'
   x86ImageName: 'emandere/forex-import-x86'
   armImageName: 'emandere/forex-import-arm'
   DeploymentPath: '/home/emandere/deployments/forex-import/$(releaseTag)'
@@ -61,7 +61,7 @@ stages:
           steps:
             - bash: |
                 # Write your commands here
-                
+
                 echo $(releaseTag)
 
                 sudo mkdir -p $(DeploymentPath)
