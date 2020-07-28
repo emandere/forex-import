@@ -13,9 +13,9 @@ variables:
   tag: '$(Build.BuildId)'
   x86ImageName: 'emandere/forex-import-x86'
   armImageName: 'emandere/forex-import-arm'
-  DeploymentPath: '/home/emandere/deployments/forex-import/$(Release.ReleaseName)'
+  DeploymentPath: '/home/emandere/deployments/forex-import/$(Build.BuildId)'
   GitHubDeploymentPath: 'https://raw.githubusercontent.com/emandere/forex-import/master/deployment.yaml'
-  DeploymentConfigPath: '/home/emandere/deployments/forex-import/$(Release.ReleaseName)/deployment.yaml'
+  DeploymentConfigPath: '/home/emandere/deployments/forex-import/$(Build.BuildId)/deployment.yaml'
 
 stages:
 - stage: Build
