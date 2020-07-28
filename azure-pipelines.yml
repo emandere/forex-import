@@ -13,6 +13,9 @@ variables:
   tag: '$(Build.BuildId)'
   x86ImageName: 'emandere/forex-import-x86'
   armImageName: 'emandere/forex-import-arm'
+  DeploymentPath: '/home/emandere/deployments/forex-import/$(Release.ReleaseName)'
+  GitHubDeploymentPath: 'https://raw.githubusercontent.com/emandere/forex-import/master/deployment.yaml'
+  DeploymentConfigPath: '/home/emandere/deployments/forex-import/$(Release.ReleaseName)/deployment.yaml'
 
 stages:
 - stage: Build
@@ -45,7 +48,7 @@ stages:
 - stage: Deploy
   jobs:
     # track deployments on the environment
-  - deployment: forex_import
+  - deployment: WSL Linux
     pool:
       name: LocalLinux
     # creates an environment if it doesn’t exist
@@ -55,4 +58,21 @@ stages:
       runOnce:
         deploy:
           steps:
-          - script: echo my first deployment
+            - bash: |
+               # Write your commands here
+               
+               sudo mkdir -p $(DeploymentPath)
+               
+               sudo rm -f $(DeploymentPath)/*
+               
+               sudo chmod 775 $(DeploymentPath)
+               
+               sudo wget -q $(GitHubDeploymentPath) -P  $(DeploymentPath)
+               
+               sudo sed -i 's/{platform}/x86/'  $(DeploymentConfigPath)
+               
+               sudo sed -i 's/{buildId}/$(Build.BuildId)/'  $(DeploymentConfigPath)
+               
+               
+              displayName: 'Set up artifacts'
+            
