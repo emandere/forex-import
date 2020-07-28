@@ -48,7 +48,7 @@ stages:
 - stage: Deploy
   jobs:
     # track deployments on the environment
-  - deployment: WSL Linux
+  - deployment: WSL_Linux
     pool:
       name: LocalLinux
     # creates an environment if it doesn’t exist
