@@ -45,7 +45,7 @@ stages:
 - stage: Deploy
   jobs:
     # track deployments on the environment
-  - deployment: forex-import
+  - deployment: forex_import
     pool:
       name: LocalLinux
     # creates an environment if it doesn’t exist
