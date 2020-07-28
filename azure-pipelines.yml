@@ -41,17 +41,18 @@ stages:
         containerRegistry: 'dockerhub'
         tags: |
           $(tag)
-  - stage: Deploy
-    jobs:
-      # track deployments on the environment
-    - deployment: forex-import
-      pool:
-        name: LocalLinux
-      # creates an environment if it doesn’t exist
-      environment: 'forex-import'
-      strategy:
-        # default deployment strategy
-        runOnce:
-          deploy:
-            steps:
-            - script: echo my first deployment
+          
+- stage: Deploy
+  jobs:
+    # track deployments on the environment
+  - deployment: forex-import
+    pool:
+      name: LocalLinux
+    # creates an environment if it doesn’t exist
+    environment: 'forex-import'
+    strategy:
+      # default deployment strategy
+      runOnce:
+        deploy:
+          steps:
+          - script: echo my first deployment
