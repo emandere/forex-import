@@ -53,6 +53,9 @@ namespace forex_import
             
             Console.WriteLine($"Environment: {env} and API's: {serverLocal} and {server}");
 
+            //var sessionsLocal = await GetSessions(server);
+            //await SaveSessions(serverLocal,sessionsLocal);
+
             while(true)
             {
                 try
@@ -75,6 +78,7 @@ namespace forex_import
             
            
             var pricesLocal = await GetDailyPricesFromLocal(serverLocal);
+            var pricesRemote = await GetDailyPricesFromLocal(server);
             var shouldUpdate = false;
 
             if(pricesLocal.priceDTOs.Count()==0)
@@ -84,8 +88,8 @@ namespace forex_import
             
             foreach(var price in pricesLocal.priceDTOs)
             {
-                var serverPrice = await GetLatestPricesDTO(server,price.Instrument);
-                if(serverPrice.Item1.UTCTime.CompareTo(price.UTCTimeAddZ)>0)
+                var serverPrice = pricesRemote.priceDTOs.FirstOrDefault( x => x.Instrument == price.Instrument);
+                if(serverPrice.Time.CompareTo(price.Time)>0)
                 {
                     shouldUpdate = true;
                 }
@@ -99,8 +103,8 @@ namespace forex_import
             {
                 foreach(var pair in pairs)
                 {
-                    var serverPrice = await GetLatestPricesDTO(server,pair);
-                    await SaveRealTimePrices(serverLocal,pair,serverPrice.Item2);
+                    var serverPrice = pricesRemote.priceDTOs.FirstOrDefault( x => x.Instrument == pair);
+                    await SaveRealTimePrices(serverLocal,pair,serverPrice);
                     Console.WriteLine($"{pair} Updated");
                 }
                 var sessionsLocal = await GetSessions(server);
@@ -114,7 +118,7 @@ namespace forex_import
 
         static async Task<string> GetDailyPrices(string startDate, string endDate,string server,string pair)
         {
-            string url = $"http://{server}/api/forexclasses/v1/dailypricesrange/{pair}/{startDate}/{endDate}";
+            string url = $"http://{server}/api/forexdailyprices/{pair}/{startDate}/{endDate}";
             string responseBody = await client.GetStringAsync(url);
             //Console.WriteLine(responseBody);
             return responseBody;
@@ -130,18 +134,18 @@ namespace forex_import
 
         static async Task<string> GetSessions(string server)
         {
-            string url = $"http://{server}/api/forexclasses/v1/sessions";
+            string url = $"http://{server}/api/forexsession";
             string responseBody = await client.GetStringAsync(url);
             //Console.WriteLine(responseBody);
             return responseBody; 
         }
 
-        static async Task<(ForexPriceDTO,string)> GetLatestPricesDTO(string server, string pair)
+        static async Task<(ForexPricesDTO,string)> GetLatestPricesDTO(string server)
         {
-            string url = $"http://{server}/api/forexclasses/v1/latestprices/{pair}";
+            string url = $"http://{server}/api/forexprices";
             string responseBody = await client.GetStringAsync(url);
 
-            var priceLocal = JsonSerializer.Deserialize<ForexPriceDTO>(responseBody);
+            var priceLocal = JsonSerializer.Deserialize<ForexPricesDTO>(responseBody);
 
             return (priceLocal,responseBody);
         }
@@ -179,10 +183,11 @@ namespace forex_import
             var responseBodyPost = await client.PostAsync(urlPost,stringContent);
         }
 
-        static async Task SaveRealTimePrices(string server,string pair,string responseBody)
+        static async Task SaveRealTimePrices(string server,string pair,ForexPriceDTO price)
         {
             string urlPost = $"http://{server}/api/forexprices/{pair}";
-            var stringContent = new StringContent(responseBody,UnicodeEncoding.UTF8, "application/json");
+            var serializePrice = JsonSerializer.Serialize<ForexPriceDTO>(price);
+            var stringContent = new StringContent(serializePrice,UnicodeEncoding.UTF8, "application/json");
             var responseBodyPost = await client.PutAsync(urlPost,stringContent);
         }
 

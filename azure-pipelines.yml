@@ -91,4 +91,6 @@ stages:
                 sudo k3s kubectl rollout status deployment.v1.apps/forex-import
             
               displayName: 'Verify Release'
+
+
             

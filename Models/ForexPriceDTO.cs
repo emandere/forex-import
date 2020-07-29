@@ -25,6 +25,6 @@ namespace forex_import.Models
 
         public DateTime UTCTime{get => DateTime.Parse(Time);}
 
-        public DateTime UTCTimeAddZ{get => DateTime.Parse(Time+"Z");}
+        //public DateTime UTCTimeAddZ{get => DateTime.Parse(Time+"Z");}
     }   
 }
