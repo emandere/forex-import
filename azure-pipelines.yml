@@ -14,9 +14,9 @@ variables:
   releaseTag: '$(Build.BuildNumber)'
   x86ImageName: 'emandere/forex-import-x86'
   armImageName: 'emandere/forex-import-arm'
-  DeploymentPath: '/home/emandere/deployments/forex-import/$(releaseTag)'
+  DeploymentPath: '/Users/emandere/deployments/forex-import/$(releaseTag)'
   GitHubDeploymentPath: 'https://raw.githubusercontent.com/emandere/forex-import/master/deployment.yaml'
-  DeploymentConfigPath: '/home/emandere/deployments/forex-import/$(releaseTag)/deployment.yaml'
+  DeploymentConfigPath: '/Users/emandere/deployments/forex-import/$(releaseTag)/deployment.yaml'
 
 stages:
 - stage: Build
@@ -49,9 +49,9 @@ stages:
 - stage: Deploy
   jobs:
     # track deployments on the environment
-  - deployment: WSL_Linux
+  - deployment: MacBook
     pool:
-      name: LocalLinux2
+      name: MacPool
     # creates an environment if it doesn’t exist
     environment: 'forex-import'
     strategy:
@@ -64,17 +64,17 @@ stages:
 
                 echo $(releaseTag)
 
-                sudo mkdir -p $(DeploymentPath)
+                mkdir -p $(DeploymentPath)
                 
-                sudo rm -f $(DeploymentPath)/*
+                rm -f $(DeploymentPath)/*
                 
-                sudo chmod 775 $(DeploymentPath)
+                chmod 775 $(DeploymentPath)
                 
-                sudo wget -q $(GitHubDeploymentPath) -P  $(DeploymentPath)
+                wget -q $(GitHubDeploymentPath) -P  $(DeploymentPath)
                 
-                sudo sed -i 's/{platform}/x86/'  $(DeploymentConfigPath)
+                gsed -i 's/{platform}/x86/'  $(DeploymentConfigPath)
                 
-                sudo sed -i 's/{buildId}/$(Build.BuildId)/'  $(DeploymentConfigPath)
+                gsed -i 's/{buildId}/$(Build.BuildId)/'  $(DeploymentConfigPath)
                
                
               displayName: 'Set up artifacts'
@@ -82,13 +82,13 @@ stages:
             - bash: |
                 # Write your commands here
            
-                sudo k3s kubectl apply -f  $(DeploymentConfigPath)
+                kubectl apply -f  $(DeploymentConfigPath)
               
               displayName: 'Deploy Release'
             - bash: |
                 # Write your commands here
          
-                sudo k3s kubectl rollout status deployment.v1.apps/forex-import
+                kubectl rollout status deployment.v1.apps/forex-import
             
               displayName: 'Verify Release'
 
