@@ -72,7 +72,7 @@ stages:
                 
                 wget -q $(GitHubDeploymentPath) -P  $(DeploymentPath)
                 
-                gsed -i 's/{platform}/x86/'  $(DeploymentConfigPath)
+                gsed -i 's/{platform}/arm/'  $(DeploymentConfigPath)
                 
                 gsed -i 's/{buildId}/$(Build.BuildId)/'  $(DeploymentConfigPath)
                
